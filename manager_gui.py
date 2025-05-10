@@ -2,8 +2,71 @@ import tkinter as tk
 from tkinter import messagebox, simpledialog
 import sqlite3
 from customer_gui import show_customers_via_gui
+import matplotlib.pyplot as plt
 
 DB_PATH = "users.db"
+
+def show_statistics_window():
+    stats_win = tk.Toplevel()
+    stats_win.title("İstatistik Sorgula")
+
+    tk.Label(stats_win, text="Marka (Brand):").grid(row=0, column=0)
+    brand_entry = tk.Entry(stats_win)
+    brand_entry.grid(row=0, column=1)
+
+    tk.Label(stats_win, text="Model:").grid(row=1, column=0)
+    model_entry = tk.Entry(stats_win)
+    model_entry.grid(row=1, column=1)
+
+    tk.Label(stats_win, text="Yıl (Year):").grid(row=2, column=0)
+    year_entry = tk.Entry(stats_win)
+    year_entry.grid(row=2, column=1)
+
+    def submit_query():
+        brand = brand_entry.get().strip()
+        model = model_entry.get().strip()
+        year = year_entry.get().strip()
+
+        if not any([brand, model, year]):
+            messagebox.showwarning("Uyarı", "Lütfen en az bir alan doldurun.")
+            return
+
+        conn = sqlite3.connect("users.db")
+        cursor = conn.cursor()
+
+        query = "SELECT * FROM sold_vehicles"
+        cursor.execute(query)
+        all_vehicles = cursor.fetchall()
+
+        filtered = []
+        for v in all_vehicles:
+            if ((not brand or v[1].lower() == brand.lower()) and
+                (not model or v[2].lower() == model.lower()) and
+                (not year or v[3] == year)):
+                filtered.append(v)
+
+        conn.close()
+
+        total = len(all_vehicles)
+        match = len(filtered)
+        if total == 0:
+            messagebox.showinfo("Bilgi", "Satılmış araç yok.")
+            return
+
+        percent = (match / total) * 100
+
+        # Pie Chart
+        labels = ['Sorguya Uyan', 'Diğer']
+        sizes = [match, total - match]
+        colors = ['lightcoral', 'lightskyblue']
+
+        plt.figure(figsize=(6, 6))
+        plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=90)
+        plt.title(f"Sorgu Sonucu: {match} araç, %{percent:.1f}")
+        plt.axis('equal')
+        plt.show()
+
+    tk.Button(stats_win, text="Sorgula", command=submit_query).grid(row=3, column=0, columnspan=2)
 
 # Müşteri Temsilcisi Ekleme Fonksiyonu
 def add_agent():
@@ -231,6 +294,7 @@ def open_manager_panel(user_id):
     tk.Button(window, text="Test Sürüşü İsteklerini Onayla", width=35, command=lambda: show_test_drive_requests(window)).pack(pady=10)
     tk.Button(window, text="Teslim Edilen Araç Raporu", width=35, command=lambda: show_delivered_vehicle_report(window)).pack(pady=10)
     tk.Button(window, text="Yıllık Satış Raporu", width=35, command=lambda: show_sales_report(window)).pack(pady=10)
+    tk.Button(window, text="İstatistik Göster", width=35, command=show_statistics_window).pack(pady=10)
     tk.Button(window, text="Müşteri Temsilcisi Ekle", width=35, command=add_agent).pack(pady=10)
     tk.Button(window, text="Çıkış", width=35, command=window.destroy).pack(pady=20)
 
