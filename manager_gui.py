@@ -173,7 +173,7 @@ def show_delivered_vehicle_report(root):
         info = f"{i}. {name} {surname} | {brand} {model} | {year} | {color} | {price}₺ | Teslimat: {date}"
         tk.Label(scrollable_frame, text=info, anchor="w", justify="left", font=("Arial", 11)).pack(anchor="w", pady=2)
 
-# Satış Adetlerini Yıllık Görüntüleme
+# Yıllık Satış Raporu
 def show_sales_report(root):
     window = tk.Toplevel(root)
     window.title("Yıllık Satış Raporu")
