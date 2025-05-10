@@ -75,7 +75,6 @@ def show_offer_requests_for_manager(root):
         cid, name, surname, model = row
         line = tk.Frame(scrollable_frame)
         line.pack(anchor="w", padx=10, pady=5)
-
         tk.Label(line, text=f"{i}. {name} {surname} | Model: {model}").grid(row=0, column=0, sticky="w")
         entry = tk.Entry(line, width=10)
         entry.grid(row=0, column=1, padx=10)
@@ -129,7 +128,6 @@ def show_test_drive_requests(root):
         cid, name, surname, model = row
         line = tk.Frame(scrollable_frame)
         line.pack(anchor="w", padx=10, pady=5)
-
         tk.Label(line, text=f"{i}. {name} {surname} | Model: {model}").grid(row=0, column=0, sticky="w")
         tk.Button(line, text="Onayla", command=lambda cid=cid: approve_drive(cid)).grid(row=0, column=1, padx=10)
 
@@ -197,23 +195,16 @@ def show_sales_report(root):
 
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute(""" 
+    c.execute("""
         SELECT 
-            s.brand, 
-            s.model, 
-            sv.year AS model_year, 
-            strftime('%Y', sv.delivered_at) AS sale_year, 
+            brand, 
+            model, 
+            year AS model_year, 
+            strftime('%Y', delivered_at) AS sale_year, 
             COUNT(*) AS total_sales
-        FROM 
-            sold_vehicles sv
-        JOIN 
-            showroom s 
-        ON 
-            sv.brand = s.brand AND sv.model = s.model
-        GROUP BY 
-            s.brand, s.model, sv.year, strftime('%Y', sv.delivered_at)
-        ORDER BY 
-            sale_year
+        FROM sold_vehicles
+        GROUP BY brand, model, year, sale_year
+        ORDER BY sale_year
     """)
     rows = c.fetchall()
     conn.close()
@@ -227,6 +218,7 @@ def show_sales_report(root):
         info = f"{i}. {brand} {model} {model_year} | Satış Yılı: {sale_year} | Toplam Satış: {total_sales}"
         tk.Label(scrollable_frame, text=info, anchor="w", justify="left", font=("Arial", 11)).pack(anchor="w", pady=2)
 
+# Ana Panel
 def open_manager_panel(user_id):
     window = tk.Tk()
     window.title("Müdür Paneli")
