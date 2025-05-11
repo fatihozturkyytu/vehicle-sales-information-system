@@ -101,7 +101,6 @@ def gui_send_to_dealer_purpose(purpose):
         return
 
     if purpose == "Sipariş Üzerine":
-        # Sipariş üzerine çekildiğinde tarih istemeyeceğiz
         name = simpledialog.askstring("Müşteri Adı", "Müşteri adı:")
         surname = simpledialog.askstring("Müşteri Soyadı", "Müşteri soyadı:")
         price = simpledialog.askfloat("Satış Fiyatı", "Araç satış fiyatı (₺):")
@@ -110,12 +109,26 @@ def gui_send_to_dealer_purpose(purpose):
             messagebox.showerror("Hata", "Tüm müşteri bilgileri girilmeli.")
             return
 
+        # Check if customer exists
+        conn = sqlite3.connect("users.db")
+        cursor = conn.cursor()
+        cursor.execute(
+            "SELECT COUNT(*) FROM customers WHERE name = ? AND surname = ?",
+            (name.strip(), surname.strip())
+        )
+        count = cursor.fetchone()[0]
+        conn.close()
+
+        if count == 0:
+            messagebox.showerror("Hata", "Bu isimde bir müşteri bulunamadı.")
+            return
+
         # Stok adedini düş
         selected_stock_local.quantity -= 1
         Stock._update_db_quantity(selected_stock_local)
 
         # Showroom'a ekle
-        Showroom.add_sales_vehicle(selected_stock_local, name, surname, price, None)  # Tarih alınmayacak
+        Showroom.add_sales_vehicle(selected_stock_local, name, surname, price, None)
         update_stock_list_for_selected_vehicle()
         messagebox.showinfo("Başarılı", "Araç bayiye sipariş üzerine çekildi.")
         open_showroom_window("Satış Amaçlı Araçlar")
