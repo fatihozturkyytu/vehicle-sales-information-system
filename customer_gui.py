@@ -12,6 +12,16 @@ def add_customer_via_form(root):
         model = entry_model.get()
         offer = var_offer.get()
         test_drive = var_test_drive.get()
+        email = entry_email.get()
+        phone = entry_phone.get()
+
+        if not name or not surname or not model:
+            messagebox.showerror("Hata", "Tüm alanları doldurun.")
+            return
+
+        if not email and not phone:
+            messagebox.showerror("Hata", "En az bir iletişim bilgisi (e-posta veya telefon) girilmelidir.")
+            return
 
         if not name or not surname or not model:
             messagebox.showerror("Hata", "Tüm alanları doldurun.")
@@ -20,9 +30,9 @@ def add_customer_via_form(root):
         conn = sqlite3.connect(DB_PATH)
         c = conn.cursor()
         c.execute("""INSERT INTO customers 
-                     (name, surname, interested_model, offer_requested, test_drive_requested) 
-                     VALUES (?, ?, ?, ?, ?)""",
-                  (name, surname, model, offer, test_drive))
+            (name, surname, interested_model, offer_requested, test_drive_requested, email, phone) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                  (name, surname, model, offer, test_drive, email, phone))
         conn.commit()
         conn.close()
         messagebox.showinfo("Başarılı", "Müşteri başarıyla eklendi.")
@@ -43,13 +53,21 @@ def add_customer_via_form(root):
     entry_model = tk.Entry(window)
     entry_model.grid(row=2, column=1)
 
+    tk.Label(window, text="E-posta:").grid(row=3, column=0, padx=10, pady=5)
+    entry_email = tk.Entry(window)
+    entry_email.grid(row=3, column=1)
+
+    tk.Label(window, text="Telefon:").grid(row=4, column=0, padx=10, pady=5)
+    entry_phone = tk.Entry(window)
+    entry_phone.grid(row=4, column=1)
+
     var_offer = tk.IntVar()
-    tk.Checkbutton(window, text="Fiyat Teklifi İsteniyor", variable=var_offer).grid(row=3, columnspan=2, pady=5)
+    tk.Checkbutton(window, text="Fiyat Teklifi İsteniyor", variable=var_offer).grid(row=5, columnspan=2, pady=5)
 
     var_test_drive = tk.IntVar()
-    tk.Checkbutton(window, text="Test Sürüşü İsteniyor", variable=var_test_drive).grid(row=4, columnspan=2, pady=5)
+    tk.Checkbutton(window, text="Test Sürüşü İsteniyor", variable=var_test_drive).grid(row=6, columnspan=2, pady=5)
 
-    tk.Button(window, text="Kaydet", command=submit).grid(row=5, columnspan=2, pady=10)
+    tk.Button(window, text="Kaydet", command=submit).grid(row=7, columnspan=2, pady=10)
 
 # === GUI Fonksiyonu: Müşterileri Listele ===
 def show_customers_via_gui(root):
@@ -79,7 +97,7 @@ def show_customers_via_gui(root):
 
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute("SELECT name, surname, interested_model, offer_requested FROM customers")
+    c.execute("SELECT name, surname, interested_model, offer_requested, email, phone FROM customers")
     rows = c.fetchall()
     conn.close()
 
@@ -88,9 +106,16 @@ def show_customers_via_gui(root):
         return
 
     for i, row in enumerate(rows, 1):
-        name, surname, model, offer = row
+        name, surname, model, offer, email, phone = row
         offer_text = "Evet" if offer else "Hayır"
-        info = f"{i}. {name} {surname} | Model: {model} | Teklif: {offer_text}"
+        contact = []
+        if email:
+            contact.append(f"E-posta: {email}")
+        if phone:
+            contact.append(f"Tel: {phone}")
+        contact_info = " | " + " - ".join(contact) if contact else ""
+
+        info = f"{i}. {name} {surname} | Model: {model} | Teklif: {offer_text}{contact_info}"
         tk.Label(scrollable_frame, text=info, anchor="w", justify="left", font=("Arial", 11)).pack(anchor="w", pady=2)
 
 

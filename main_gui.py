@@ -39,7 +39,9 @@ CREATE TABLE IF NOT EXISTS customers (
     offer_requested INTEGER NOT NULL CHECK(offer_requested IN (0,1)),
     proposal_price INTEGER,
     test_drive_requested INTEGER DEFAULT 0,
-    test_drive_approved INTEGER
+    test_drive_approved INTEGER,
+    email TEXT,
+    phone TEXT
 )
 """)
 c.execute("""
