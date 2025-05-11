@@ -13,6 +13,9 @@ from customer_gui import (
 )
 from manager_gui import open_manager_panel
 from delivery_gui import deliver_sold_vehicle
+from tkinter import Label
+from PIL import Image, ImageTk
+import os
 
 # Komut satırı parametresi kontrolü
 if len(sys.argv) >= 3:
@@ -89,7 +92,22 @@ if role == "manager":
     open_manager_panel(user_id)
 else:
     root = tk.Tk()
-    root.title("Ana Panel")
+    root.title("Borusan Oto BMW")
+    # Load BMW logo image
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    image_path = os.path.join(script_dir, "bmw.svg.png")
+    original_logo = Image.open(image_path).resize((120, 120))  # Adjust size as needed
+    logo_img = ImageTk.PhotoImage(original_logo)
+
+    # Left logo
+    logo_label_left = Label(root, image=logo_img)
+    logo_label_left.image = logo_img  # Keep a reference!
+    logo_label_left.pack(side="left", padx=20, pady=20)
+
+    # Right logo
+    logo_label_right = Label(root, image=logo_img)
+    logo_label_right.image = logo_img
+    logo_label_right.pack(side="right", padx=20, pady=20)
 
     tk.Label(root, text=f"Giriş Yapan: {user_id} (Müşteri Temsilcisi)", font=("Arial", 12, "bold")).pack(pady=10)
 
