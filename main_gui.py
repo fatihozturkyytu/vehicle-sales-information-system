@@ -119,5 +119,5 @@ else:
     tk.Button(root, text="Showroom'daki Araçları Gör", width=30, command=open_showroom_gui).pack(pady=5)
     tk.Button(root, text="Showroom'daki Aracı Teslim Et", width=30, command=lambda: deliver_sold_vehicle(root)).pack(pady=5)
 
-    tk.Button(root, text="Çıkış", width=30, command=root.destroy).pack(pady=20)
+    tk.Button(root, text="Çıkış", width=15, command=root.destroy).pack(pady=20)
     root.mainloop()

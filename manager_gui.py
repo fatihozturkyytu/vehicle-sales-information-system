@@ -3,6 +3,8 @@ from tkinter import messagebox, simpledialog
 import sqlite3
 from customer_gui import show_customers_via_gui
 import matplotlib.pyplot as plt
+from PIL import Image, ImageTk
+import os
 
 DB_PATH = "users.db"
 
@@ -296,8 +298,17 @@ def open_manager_panel(user_id):
     tk.Button(window, text="Yıllık Satış Raporu", width=35, command=lambda: show_sales_report(window)).pack(pady=10)
     tk.Button(window, text="İstatistik Göster", width=35, command=show_statistics_window).pack(pady=10)
     tk.Button(window, text="Müşteri Temsilcisi Ekle", width=35, command=add_agent).pack(pady=10)
-    tk.Button(window, text="Çıkış", width=35, command=window.destroy).pack(pady=20)
+    tk.Button(window, text="Çıkış", width=18, command=window.destroy).pack(pady=10)
+    
+    # Add BMW logo at the bottom
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    image_path = os.path.join(script_dir, "bmw.svg.png")
+    original_logo = Image.open(image_path).resize((80, 80))  # Resize as needed
+    logo_img = ImageTk.PhotoImage(original_logo)
 
+    logo_label = tk.Label(window, image=logo_img)
+    logo_label.image = logo_img  # Keep reference to avoid garbage collection
+    logo_label.pack(pady=30)
     window.mainloop()
 
 if __name__ == "__main__":
