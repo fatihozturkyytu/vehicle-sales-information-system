@@ -41,7 +41,7 @@ def deliver_sold_vehicle(root):
         customer_surname = selected[7]
 
         # Veritabanına ekle
-        c.execute("""INSERT INTO sold_vehicles (brand, model, year, color, price, customer_name, customer_surname, delivered_at)
+        c.execute("""INSERT INTO sold_vehicles (brand, model, year, color, price, customer_name, customer_surname, sold_at)
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
                   (selected[1], selected[2], selected[3], selected[4], selected[5], customer_name, customer_surname, delivered_at))
         c.execute("DELETE FROM showroom WHERE id = ?", (selected[0],))

@@ -221,7 +221,7 @@ def show_delivered_vehicle_report(root):
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute("""
-        SELECT customer_name, customer_surname, brand, model, year, color, price, delivered_at
+        SELECT customer_name, customer_surname, brand, model, year, color, price, sold_at
         FROM sold_vehicles
     """)
     rows = c.fetchall()
@@ -265,7 +265,7 @@ def show_sales_report(root):
             brand, 
             model, 
             year AS model_year, 
-            strftime('%Y', delivered_at) AS sale_year, 
+            strftime('%Y', sold_at) AS sale_year, 
             COUNT(*) AS total_sales
         FROM sold_vehicles
         GROUP BY brand, model, year, sale_year
