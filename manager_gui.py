@@ -5,6 +5,7 @@ from customer_gui import show_customers_via_gui
 import matplotlib.pyplot as plt
 from PIL import Image, ImageTk
 import os
+from datetime import datetime
 
 DB_PATH = "users.db"
 
@@ -266,7 +267,7 @@ def show_sales_report(root):
             model, 
             year AS model_year, 
             strftime('%Y', sold_at) AS sale_year, 
-            COUNT(*) AS total_sales
+            price
         FROM sold_vehicles
         GROUP BY brand, model, year, sale_year
         ORDER BY sale_year
@@ -279,9 +280,33 @@ def show_sales_report(root):
         return
 
     for i, row in enumerate(rows, 1):
-        brand, model, model_year, sale_year, total_sales = row
-        info = f"{i}. {brand} {model} {model_year} | Satış Yılı: {sale_year} | Toplam Satış: {total_sales}"
+        brand, model, model_year, sale_year, price = row
+        info = f"{i}. {brand} {model} {model_year} | Satış Yılı: {sale_year} | Satış Fiyatı: {price}₺"
         tk.Label(scrollable_frame, text=info, anchor="w", justify="left", font=("Arial", 11)).pack(anchor="w", pady=2)
+    
+    # Tahmini satış hesaplama butonu
+    def calculate_forecast():
+        current_year = datetime.now().year
+        conn = sqlite3.connect(DB_PATH)
+        c = conn.cursor()
+        c.execute("""
+            SELECT strftime('%Y', sold_at) AS sale_year, SUM(CAST(price AS INTEGER)) 
+            FROM sold_vehicles
+            WHERE sale_year >= ?
+            GROUP BY sale_year
+        """, (str(current_year - 3),))
+        rows = c.fetchall()
+        conn.close()
+
+        if not rows:
+            messagebox.showinfo("Bilgi", "Son 4 yıl için satış verisi bulunamadı.")
+            return
+
+        total_sum = sum(row[1] for row in rows)
+        forecast = total_sum / 4
+        messagebox.showinfo("Tahmin", f"Sonraki Yıl Satış Tahmini: {forecast:.2f}₺")
+
+    tk.Button(scrollable_frame, text="Sonraki Yıl Satış Tahminini Hesapla", command=calculate_forecast).pack(pady=10)
 
 # Ana Panel
 def open_manager_panel(user_id):
