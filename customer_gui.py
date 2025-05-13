@@ -1,6 +1,7 @@
 import sqlite3
 import tkinter as tk
 from tkinter import messagebox
+from models.vehicle import Vehicle 
 
 DB_PATH = "users.db"
 
@@ -9,7 +10,7 @@ def add_customer_via_form(root):
     def submit():
         name = entry_name.get()
         surname = entry_surname.get()
-        model = entry_model.get()
+        model = selected_model.get()
         offer = var_offer.get()
         test_drive = var_test_drive.get()
         email = entry_email.get()
@@ -50,8 +51,12 @@ def add_customer_via_form(root):
     entry_surname.grid(row=1, column=1)
 
     tk.Label(window, text="İlgilendiği Model:").grid(row=2, column=0, padx=10, pady=5)
-    entry_model = tk.Entry(window)
-    entry_model.grid(row=2, column=1)
+    vehicle_list = [str(v) for v in Vehicle.get_all()]
+    selected_model = tk.StringVar(window)
+    if vehicle_list:
+        selected_model.set(vehicle_list[0])
+    dropdown_model = tk.OptionMenu(window, selected_model, *vehicle_list)
+    dropdown_model.grid(row=2, column=1)
 
     tk.Label(window, text="E-posta:").grid(row=3, column=0, padx=10, pady=5)
     entry_email = tk.Entry(window)
