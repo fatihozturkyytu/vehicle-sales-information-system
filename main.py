@@ -17,7 +17,7 @@ def login(role):
     c = conn.cursor()
     c.execute("SELECT * FROM users WHERE id=? AND password=? AND role=?", (user_id, password, role))
     if c.fetchone():
-        root.withdraw()  # root.destroy() yerine pencereyi gizle
+        root.destroy()
         subprocess.Popen([sys.executable, "main_gui.py", user_id, role])
     else:
         messagebox.showerror("Giriş Hatalı", "ID, şifre veya rol hatalı.")
