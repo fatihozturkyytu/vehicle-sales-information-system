@@ -1,6 +1,9 @@
 import unittest
 from unittest.mock import patch
 import sqlite3
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from manager_gui import add_agent, DB_PATH
 import os
 
